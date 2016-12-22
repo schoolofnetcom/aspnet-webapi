@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <div>
+        <h3>Lista de Produtos</h3>
+        <ul id="listaProdutos"></ul>
+    </div>
+    <div>
+        <h3>Pesquisa por Código</h3>
+        <input type="text" id="txtCodigo" />
+        <input type="button" id="btnPesquisar" value="Pesquisar" onclick="Pesquisar();" />
+        <br />
+        <span id="produto"></span>
+    </div>
+    <div>
+        <input type="button" id="btnPost" value="POST" onclick="Post();" />
+        <span id="post"></span>
+    </div>
+    <div>
+        <input type="button" id="btnPut" value="PUT" onclick="Put();" />
+        <span id="put"></span>
+    </div>
+    <div>
+        <input type="button" id="btnDelete" value="DELETE" onclick="Delete();" />
+        <span id="delete"></span>
+    </div>
+
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+
+    <script>
+
+        var uri = "api/produto";
+
+        $(document).ready(function () {
+
+            Listar();
+
+        });
+
+        function Listar()
+        {
+            $.getJSON(uri)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        $("<li>", { text: item.Codigo + " " + item.Nome + " = " + item.Valor }).appendTo($("#listaProdutos"));
+                    });
+                });
+        }
+
+        function Pesquisar()
+        {
+            var codigo = $("#txtCodigo").val();
+            $.getJSON(uri + "?codigo=" + codigo)
+                .done(function (data) {
+                    $("#produto").text("Produto: " + data.Nome + " = " + data.Valor);
+                });
+        }
+
+        function Post()
+        {
+            var produto = { Codigo: 10, Nome: "Produto 10", Categoria: "Outros", Valor: 110 };
+
+            $.ajax({
+                type: 'POST',
+                url: uri,
+                data: JSON.stringify(produto),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+                    $("#post").text("Produto cadastrado com sucesso");
+                }
+            });
+        }
+
+        function Put() {
+            var produto = { Codigo: 20, Nome: "Produto 20", Categoria: "Outros", Valor: 220 };
+
+            $.ajax({
+                type: 'PUT',
+                url: uri,
+                data: JSON.stringify(produto),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+                    $("#put").text("Produto cadastrado/atualizado com sucesso");
+                }
+            });
+        }
+
+        function Delete() {
+            var codigo = $("#txtCodigo").val();
+
+            $.ajax({
+                type: 'DELETE',
+                url: uri + "?codigo=" + codigo,
+                success: function (data) {
+                    $("#delete").text("Produto excluído com sucesso");
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
